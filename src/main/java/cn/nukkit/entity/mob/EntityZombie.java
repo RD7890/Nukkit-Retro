@@ -1,9 +1,15 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.item.Item;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Dr. Nick Doran on 4/23/2017.
@@ -58,5 +64,31 @@ public class EntityZombie extends EntityMob {
         player.dataPacket(pk);
 
         super.spawnTo(player);
+    }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        boolean hasUpdate = super.onUpdate(currentTick);
+
+        // Sunlight burning logic
+        if (this.isAlive() && currentTick % 20 == 0) {
+            int time = this.level.getTime() % Level.TIME_FULL;
+            boolean isDay = (time < 12500 || time > 23500);
+            if (isDay && !this.level.isRaining() && !this.level.isThundering()) {
+                if (!this.isInsideOfWater() && this.level.canBlockSeeSky(this)) {
+                    this.setOnFire(8);
+                }
+            }
+        }
+
+        return hasUpdate;
+    }
+
+    @Override
+    public Item[] getDrops() {
+        List<Item> drops = new ArrayList<>();
+        int flesh = ThreadLocalRandom.current().nextInt(0, 3);
+        if (flesh > 0) drops.add(Item.get(Item.ROTTEN_FLESH, 0, flesh));
+        return drops.toArray(new Item[0]);
     }
 }
