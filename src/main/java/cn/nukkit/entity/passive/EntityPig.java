@@ -241,10 +241,10 @@ public class EntityPig extends EntityAnimal implements EntityRideable {
                     this.yaw = rider.yaw;
                     this.pitch = rider.pitch;
 
-                    double speed = 0.08;
+                    double speed = 0.15; // Faster ridden base speed (was 0.08)
                     Item held = rider.getInventory().getItemInHand();
                     if (held != null && held.getId() == Item.CARROT_ON_A_STICK) {
-                        speed = 0.22; // Boost with carrot on a stick
+                        speed = 0.28; // Faster boost with carrot on a stick (was 0.22)
                     }
 
                     double rad = Math.toRadians(this.yaw);
@@ -267,7 +267,7 @@ public class EntityPig extends EntityAnimal implements EntityRideable {
 
             if (this.panicTicks > 0) {
                 this.panicTicks -= tickDiff;
-                moveSpeed = 0.18;
+                moveSpeed = 0.25; // Faster panic run speed (was 0.18)
                 if (ThreadLocalRandom.current().nextInt(10) == 0) {
                     this.targetYaw = ThreadLocalRandom.current().nextDouble(0, 360);
                 }
@@ -295,21 +295,21 @@ public class EntityPig extends EntityAnimal implements EntityRideable {
                     this.targetYaw = Math.toDegrees(-Math.atan2(dx, dz));
 
                     if (nearestDistSq > 4.0) { // Keep 2-block distance
-                        moveSpeed = 0.11;
+                        moveSpeed = 0.18; // Faster food following speed (was 0.11)
                     }
                 } else {
-                    // Idle wander
+                    // Idle wander (more active, shorter pauses, faster movement)
                     if (this.wanderTicks <= 0) {
-                        if (ThreadLocalRandom.current().nextInt(3) == 0) {
-                            this.wanderTicks = ThreadLocalRandom.current().nextInt(40, 80);
+                        if (ThreadLocalRandom.current().nextBoolean()) {
+                            this.wanderTicks = ThreadLocalRandom.current().nextInt(40, 75);
                             this.targetYaw = ThreadLocalRandom.current().nextDouble(0, 360);
                         } else {
-                            this.wanderTicks = ThreadLocalRandom.current().nextInt(60, 120); // Pause
+                            this.wanderTicks = ThreadLocalRandom.current().nextInt(20, 45); // Shorter pause
                         }
                     } else {
                         this.wanderTicks -= tickDiff;
-                        if (this.wanderTicks > 20) {
-                            moveSpeed = 0.06;
+                        if (this.wanderTicks > 5) {
+                            moveSpeed = 0.14; // Faster normal wandering speed (was 0.06)
                         }
                     }
                 }
@@ -319,7 +319,7 @@ public class EntityPig extends EntityAnimal implements EntityRideable {
             double yawDiff = this.targetYaw - this.yaw;
             while (yawDiff < -180) yawDiff += 360;
             while (yawDiff >= 180) yawDiff -= 360;
-            this.yaw += yawDiff * 0.2;
+            this.yaw += yawDiff * 0.35;
 
             if (moveSpeed > 0.0) {
                 double rad = Math.toRadians(this.yaw);

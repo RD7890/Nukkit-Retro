@@ -248,6 +248,8 @@ public class Level implements ChunkManager, Metadatable {
 
     public GameRules gameRules;
 
+    private final MobSpawner mobSpawner = new MobSpawner();
+
     public Level(Server server, String name, String path, Class<? extends LevelProvider> provider) {
         this.blockStates = Block.fullList;
         this.levelId = levelIdCounter++;
@@ -839,6 +841,8 @@ public class Level implements ChunkManager, Metadatable {
         this.timings.tickChunks.startTiming();
         this.tickChunks();
         this.timings.tickChunks.stopTiming();
+
+        this.mobSpawner.tick(this, currentTick);
 
         if (!this.changedBlocks.isEmpty()) {
             if (!this.players.isEmpty()) {
